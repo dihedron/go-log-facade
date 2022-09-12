@@ -3,7 +3,7 @@ package file
 import (
 	"os"
 
-	"github.com/dihedron/go-logging/logging/stream"
+	"github.com/dihedron/go-log-facade/logging/stream"
 )
 
 // NewLogger returns a stream.Logger writing to a file at

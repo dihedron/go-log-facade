@@ -3,7 +3,7 @@ package logging
 import (
 	"sync"
 
-	"github.com/dihedron/go-logging/logging/noop"
+	"github.com/dihedron/go-log-facade/logging/noop"
 )
 
 // Level represents the logging level.

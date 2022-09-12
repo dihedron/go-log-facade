@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dihedron/go-logging/logging"
+	"github.com/dihedron/go-log-facade/logging"
 )
 
 // Logger wraps the Golang testing framework logger.

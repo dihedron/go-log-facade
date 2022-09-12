@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dihedron/go-logging/logging"
+	"github.com/dihedron/go-log-facade/logging"
 	"github.com/hashicorp/go-hclog"
 )
 

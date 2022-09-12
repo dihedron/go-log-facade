@@ -3,7 +3,7 @@ package console
 import (
 	"os"
 
-	"github.com/dihedron/go-logging/logging/stream"
+	"github.com/dihedron/go-log-facade/logging/stream"
 )
 
 type Where int8

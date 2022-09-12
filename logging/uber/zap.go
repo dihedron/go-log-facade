@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/dihedron/go-logging/logging"
+	"github.com/dihedron/go-log-facade/logging"
 	"go.uber.org/zap"
 )
 

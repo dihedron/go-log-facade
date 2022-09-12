@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dihedron/go-logging/logging"
+	"github.com/dihedron/go-log-facade/logging"
 )
 
 // Logger is te type wrapping the default Golang logger.
