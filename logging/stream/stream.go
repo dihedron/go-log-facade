@@ -3,6 +3,7 @@ package stream
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -16,7 +17,8 @@ const TimeFormat = "2006-01-02T15:04:05.999-0700"
 
 // Logger is a logger that write sits messages to a stream.
 type Logger struct {
-	stream *os.File
+	stream io.Writer
+	level  *logging.Level
 }
 
 // NewLogger returns an instance of a stream Logger.
@@ -26,12 +28,37 @@ func NewLogger(stream *os.File) *Logger {
 	}
 }
 
+func (l *Logger) SetLevel(level logging.Level) {
+	l.level = &level
+}
+
+func (l *Logger) GetLevel() *logging.Level {
+	if l.level != nil {
+		// there's a specific logging level for this logger
+		return l.level
+	}
+	// there is no per-instance logging level, return the global level
+	level := logging.GetGlobalLevel()
+	return &level
+}
+
+func (l *Logger) ResetLevel() {
+	l.level = nil
+}
+
+func (l *Logger) Close() error {
+	if closer, ok := l.stream.(io.Closer); ok {
+		return closer.Close()
+	}
+	return nil
+}
+
 // Trace logs a message at LevelTrace level.
 func (l *Logger) Trace(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelTrace {
+	if *l.GetLevel() <= logging.LevelTrace {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.write(color.HiWhiteString("TRC"), append(args, info)...)
 		} else {
 			l.write("TRC", append(args, info)...)
@@ -41,10 +68,10 @@ func (l *Logger) Trace(args ...interface{}) {
 
 // Tracef logs a message at LevelTrace level.
 func (l *Logger) Tracef(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelTrace {
+	if *l.GetLevel() <= logging.LevelTrace {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.writef(color.HiWhiteString("TRC"), msg+" "+info, args...)
 		} else {
 			l.writef("TRC", msg+" "+info, args...)
@@ -54,10 +81,10 @@ func (l *Logger) Tracef(msg string, args ...interface{}) {
 
 // Debug logs a message at LevelDebug level.
 func (l *Logger) Debug(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelDebug {
+	if *l.GetLevel() <= logging.LevelDebug {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.write(color.HiBlueString("DBG"), append(args, info)...)
 		} else {
 			l.write("DBG", append(args, info)...)
@@ -67,10 +94,10 @@ func (l *Logger) Debug(args ...interface{}) {
 
 // Debugf logs a message at LevelDebug level.
 func (l *Logger) Debugf(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelDebug {
+	if *l.GetLevel() <= logging.LevelDebug {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.writef(color.HiBlueString("DBG"), msg+" "+info, args...)
 		} else {
 			l.writef("DBG", msg+" "+info, args...)
@@ -80,10 +107,10 @@ func (l *Logger) Debugf(msg string, args ...interface{}) {
 
 // Info logs a message at LevelInfo level.
 func (l *Logger) Info(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelInfo {
+	if *l.GetLevel() <= logging.LevelInfo {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.write(color.HiGreenString("INF"), append(args, info)...)
 		} else {
 			l.write("INF", append(args, info)...)
@@ -93,10 +120,10 @@ func (l *Logger) Info(args ...interface{}) {
 
 // Infof logs a message at LevelInfof level.
 func (l *Logger) Infof(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelInfo {
+	if *l.GetLevel() <= logging.LevelInfo {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.writef(color.HiGreenString("INF"), msg+" "+info, args...)
 		} else {
 			l.writef("INF", msg+" "+info, args...)
@@ -106,10 +133,10 @@ func (l *Logger) Infof(msg string, args ...interface{}) {
 
 // Warn logs a message at LevelWarn level.
 func (l *Logger) Warn(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelWarn {
+	if *l.GetLevel() <= logging.LevelWarn {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.write(color.HiYellowString("WRN"), append(args, info)...)
 		} else {
 			l.write("WRN", append(args, info)...)
@@ -119,10 +146,10 @@ func (l *Logger) Warn(args ...interface{}) {
 
 // Warnf logs a message at LevelWarn level.
 func (l *Logger) Warnf(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelWarn {
+	if *l.GetLevel() <= logging.LevelWarn {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.writef(color.HiYellowString("WRN"), msg+" "+info, args...)
 		} else {
 			l.writef("WRN", msg+" "+info, args...)
@@ -132,10 +159,10 @@ func (l *Logger) Warnf(msg string, args ...interface{}) {
 
 // Error logs a message at LevelError level.
 func (l *Logger) Error(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelError {
+	if *l.GetLevel() <= logging.LevelError {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.write(color.HiRedString("ERR"), append(args, info)...)
 		} else {
 			l.write("ERR", append(args, info)...)
@@ -145,10 +172,10 @@ func (l *Logger) Error(args ...interface{}) {
 
 // Errorf logs a message at LevelError level.
 func (l *Logger) Errorf(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelError {
+	if *l.GetLevel() <= logging.LevelError {
 		frame := logging.GetCallerFrame(3)
 		info := fmt.Sprintf("(%s:%d)", frame.File, frame.Line)
-		if isatty.IsTerminal(l.stream.Fd()) {
+		if file, ok := l.stream.(*os.File); ok && isatty.IsTerminal(file.Fd()) {
 			l.writef(color.HiRedString("ERR"), msg+" "+info, args...)
 		} else {
 			l.writef("ERR", msg+" "+info, args...)

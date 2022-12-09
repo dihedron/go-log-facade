@@ -16,6 +16,7 @@ import (
 // wherever a Logger interface is expected.
 type Logger struct {
 	logger *zap.Logger
+	level  *logging.Level
 }
 
 var (
@@ -70,72 +71,90 @@ func NewLogger() (*Logger, error) {
 	}, nil
 }
 
+func (l *Logger) SetLevel(level logging.Level) {
+	l.level = &level
+}
+
+func (l *Logger) GetLevel() *logging.Level {
+	if l.level != nil {
+		// there's a specific logging level for this logger
+		return l.level
+	}
+	// there is no per-instance logging level, return the global level
+	level := logging.GetGlobalLevel()
+	return &level
+}
+
+func (l *Logger) ResetLevel() {
+	l.level = nil
+}
+
 // Trace logs a message at LevelTrace level.
 func (l *Logger) Trace(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelTrace {
+	if *l.GetLevel() <= logging.LevelTrace {
 		l.logger.Sugar().Debug(args...)
 	}
 }
 
 // Tracef logs a message at LevelTrace level.
 func (l *Logger) Tracef(format string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelTrace {
+	if *l.GetLevel() <= logging.LevelTrace {
 		l.logger.Sugar().Debugf(format, args...)
 	}
 }
 
 // Debug logs a message at LevelDebug level.
 func (l *Logger) Debug(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelDebug {
+	if *l.GetLevel() <= logging.LevelDebug {
 		l.logger.Sugar().Debug(args...)
 	}
 }
 
 // Debugf logs a message at LevelDebug level.
 func (l *Logger) Debugf(format string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelDebug {
+	if *l.GetLevel() <= logging.LevelDebug {
 		l.logger.Sugar().Debugf(format, args...)
 	}
 }
 
 // Info logs a message at LevelInfo level.
 func (l *Logger) Info(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelInfo {
+	if *l.GetLevel() <= logging.LevelInfo {
 		l.logger.Sugar().Info(args...)
 	}
 }
 
 // Infof logs a message at LevelInfo level.
 func (l *Logger) Infof(format string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelInfo {
+	if *l.GetLevel() <= logging.LevelInfo {
 		l.logger.Sugar().Infof(format, args...)
 	}
 }
 
 // Warn logs a message at LevelWarn level.
 func (l *Logger) Warn(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelWarn {
+	if *l.GetLevel() <= logging.LevelWarn {
 		l.logger.Sugar().Warn(args...)
 	}
 }
 
 // Warnf logs a message at LevelWarn level.
 func (l *Logger) Warnf(format string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelWarn {
+	if *l.GetLevel() <= logging.LevelWarn {
 		l.logger.Sugar().Warnf(format, args...)
 	}
 }
 
 // Error logs a message at LevelError level.
 func (l *Logger) Error(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelError {
+	if *l.GetLevel() <= logging.LevelError {
 		l.logger.Sugar().Error(args...)
 	}
 }
 
 // Errorf logs a message at LevelError level.
 func (l *Logger) Errorf(format string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelError {
+	if *l.GetLevel() <= logging.LevelError {
 		l.logger.Sugar().Errorf(format, args...)
 	}
 }

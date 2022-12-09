@@ -12,6 +12,7 @@ import (
 // Logger is the tpe warring an HCL logger.
 type Logger struct {
 	logger hclog.Logger
+	level  *logging.Level
 }
 
 // NewLogger returns an instance of HCL logger wrapper
@@ -22,9 +23,27 @@ func NewLogger(logger hclog.Logger) *Logger {
 	}
 }
 
+func (l *Logger) SetLevel(level logging.Level) {
+	l.level = &level
+}
+
+func (l *Logger) GetLevel() *logging.Level {
+	if l.level != nil {
+		// there's a specific logging level for this logger
+		return l.level
+	}
+	// there is no per-instance logging level, return the global level
+	level := logging.GetGlobalLevel()
+	return &level
+}
+
+func (l *Logger) ResetLevel() {
+	l.level = nil
+}
+
 // Trace logs a message at LevelTrace level.
 func (l *Logger) Trace(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelTrace {
+	if *l.GetLevel() <= logging.LevelTrace {
 		message := l.format(args...)
 		l.logger.Trace(message)
 	}
@@ -32,7 +51,7 @@ func (l *Logger) Trace(args ...interface{}) {
 
 // Tracef logs a message at LevelTrace level.
 func (l *Logger) Tracef(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelTrace {
+	if *l.GetLevel() <= logging.LevelTrace {
 		message := l.formatf(msg, args...)
 		l.logger.Trace(message)
 	}
@@ -40,7 +59,7 @@ func (l *Logger) Tracef(msg string, args ...interface{}) {
 
 // Debug logs a message at LevelDebug level.
 func (l *Logger) Debug(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelDebug {
+	if *l.GetLevel() <= logging.LevelDebug {
 		message := l.format(args...)
 		l.logger.Debug(message)
 	}
@@ -48,7 +67,7 @@ func (l *Logger) Debug(args ...interface{}) {
 
 // Debugf logs a message at LevelDebug level.
 func (l *Logger) Debugf(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelDebug {
+	if *l.GetLevel() <= logging.LevelDebug {
 		message := l.formatf(msg, args...)
 		l.logger.Debug(message)
 	}
@@ -56,7 +75,7 @@ func (l *Logger) Debugf(msg string, args ...interface{}) {
 
 // Info logs a message at LevelInfo level.
 func (l *Logger) Info(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelInfo {
+	if *l.GetLevel() <= logging.LevelInfo {
 		message := l.format(args...)
 		l.logger.Info(message)
 	}
@@ -64,7 +83,7 @@ func (l *Logger) Info(args ...interface{}) {
 
 // Infof logs a message at LevelInfo level.
 func (l *Logger) Infof(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelInfo {
+	if *l.GetLevel() <= logging.LevelInfo {
 		message := l.formatf(msg, args...)
 		l.logger.Info(message)
 	}
@@ -72,7 +91,7 @@ func (l *Logger) Infof(msg string, args ...interface{}) {
 
 // Warn logs a message at LevelWarn level.
 func (l *Logger) Warn(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelWarn {
+	if *l.GetLevel() <= logging.LevelWarn {
 		message := l.format(args...)
 		l.logger.Warn(message)
 	}
@@ -80,7 +99,7 @@ func (l *Logger) Warn(args ...interface{}) {
 
 // Warnf logs a message at LevelWarn level.
 func (l *Logger) Warnf(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelWarn {
+	if *l.GetLevel() <= logging.LevelWarn {
 		message := l.formatf(msg, args...)
 		l.logger.Warn(message)
 	}
@@ -88,7 +107,7 @@ func (l *Logger) Warnf(msg string, args ...interface{}) {
 
 // Error logs a message at LevelError level.
 func (l *Logger) Error(args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelError {
+	if *l.GetLevel() <= logging.LevelError {
 		message := l.format(args...)
 		l.logger.Error(message)
 	}
@@ -96,7 +115,7 @@ func (l *Logger) Error(args ...interface{}) {
 
 // Errorf logs a message at LevelError level.
 func (l *Logger) Errorf(msg string, args ...interface{}) {
-	if logging.GetLevel() <= logging.LevelError {
+	if *l.GetLevel() <= logging.LevelError {
 		message := l.formatf(msg, args...)
 		l.logger.Error(message)
 	}

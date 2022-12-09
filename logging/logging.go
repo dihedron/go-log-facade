@@ -2,8 +2,6 @@ package logging
 
 import (
 	"sync"
-
-	"github.com/dihedron/go-log-facade/logging/noop"
 )
 
 // Level represents the logging level.
@@ -20,6 +18,12 @@ const (
 
 // Logger is the common interface to all loggers.
 type Logger interface {
+	// SetLevel sets the logging level for this specific Logger; if present, it overrides the global logging level.
+	SetLevel(level Level)
+	// GetLevel returns the current logging level for this specific Logger, or nil if no level is set.
+	GetLevel() *Level
+	// ResetLevel removes the per-logger level from this specific Logger, if present.
+	ResetLevel()
 	// Trace sends out a debug message with the given arguments to the logger.
 	Trace(args ...interface{})
 	// Tracef formats a debug message using the given arguments and sends it to the logger.
@@ -47,15 +51,15 @@ var (
 	level Level = LevelDebug
 )
 
-// SetLevel sets the logging level globally.
-func SetLevel(l Level) {
+// SetLGlobalevel sets the logging level globally.
+func SetGlobalLevel(l Level) {
 	lock1.Lock()
 	defer lock1.Unlock()
 	level = l
 }
 
-// GetLevel retrieves the current global logging level.
-func GetLevel() Level {
+// GetGlobalLevel retrieves the current global logging level.
+func GetGlobalLevel() Level {
 	lock1.RLock()
 	defer lock1.RUnlock()
 	return level
@@ -63,7 +67,7 @@ func GetLevel() Level {
 
 var (
 	lock2  sync.RWMutex
-	logger Logger = &noop.Logger{}
+	logger Logger = &NoOpLogger{}
 )
 
 // SetLogger sets the logger globally.
