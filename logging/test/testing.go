@@ -54,7 +54,7 @@ func (l *Logger) ResetLevel() {
 
 // Trace logs a message at LevelTrace level.
 func (l *Logger) Trace(args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelTrace {
+	if *l.GetLevel() <= logging.LevelTrace {
 		message := l.format("TRC", args...)
 		l.t.Log(message)
 	}
@@ -62,7 +62,7 @@ func (l *Logger) Trace(args ...interface{}) {
 
 // Tracef logs a message at LevelTrace level.
 func (l *Logger) Tracef(msg string, args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelTrace {
+	if *l.GetLevel() <= logging.LevelTrace {
 		message := l.formatf("TRC", msg, args...)
 		l.t.Log(message)
 	}
@@ -70,7 +70,7 @@ func (l *Logger) Tracef(msg string, args ...interface{}) {
 
 // Debug logs a message at LevelDebug level.
 func (l *Logger) Debug(args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelDebug {
+	if *l.GetLevel() <= logging.LevelDebug {
 		message := l.format("DBG", args...)
 		l.t.Log(message)
 	}
@@ -78,7 +78,7 @@ func (l *Logger) Debug(args ...interface{}) {
 
 // Debugf logs a message at LevelDebug level.
 func (l *Logger) Debugf(msg string, args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelDebug {
+	if *l.GetLevel() <= logging.LevelDebug {
 		message := l.formatf("DBG", msg, args...)
 		l.t.Log(message)
 	}
@@ -86,7 +86,7 @@ func (l *Logger) Debugf(msg string, args ...interface{}) {
 
 // Info logs a message at LevelInfo level.
 func (l *Logger) Info(args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelInfo {
+	if *l.GetLevel() <= logging.LevelInfo {
 		message := l.format("INF", args...)
 		l.t.Log(message)
 	}
@@ -94,7 +94,7 @@ func (l *Logger) Info(args ...interface{}) {
 
 // Infof logs a message at LevelInfo level.
 func (l *Logger) Infof(msg string, args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelInfo {
+	if *l.GetLevel() <= logging.LevelInfo {
 		message := l.formatf("INF", msg, args...)
 		l.t.Log(message)
 	}
@@ -102,7 +102,7 @@ func (l *Logger) Infof(msg string, args ...interface{}) {
 
 // Warn logs a message at LevelWarn level.
 func (l *Logger) Warn(args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelWarn {
+	if *l.GetLevel() <= logging.LevelWarn {
 		message := l.format("WRN", args...)
 		l.t.Log(message)
 	}
@@ -110,7 +110,7 @@ func (l *Logger) Warn(args ...interface{}) {
 
 // Warnf logs a message at LevelWarn level.
 func (l *Logger) Warnf(msg string, args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelWarn {
+	if *l.GetLevel() <= logging.LevelWarn {
 		message := l.formatf("WRN", msg, args...)
 		l.t.Log(message)
 	}
@@ -118,7 +118,7 @@ func (l *Logger) Warnf(msg string, args ...interface{}) {
 
 // Error logs a message at LevelError level.
 func (l *Logger) Error(args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelError {
+	if *l.GetLevel() <= logging.LevelError {
 		message := l.format("ERR", args...)
 		l.t.Log(message)
 	}
@@ -126,7 +126,7 @@ func (l *Logger) Error(args ...interface{}) {
 
 // Errorf logs a message at LevelError level.
 func (l *Logger) Errorf(msg string, args ...interface{}) {
-	if *l.GetLevel() >= logging.LevelError {
+	if *l.GetLevel() <= logging.LevelError {
 		message := l.formatf("ERR", msg, args...)
 		l.t.Log(message)
 	}
